@@ -1,3 +1,8 @@
+# @author Dawson D'almeida
+# @author Conor Gormally
+# First assignment in the 'books' series
+
+
 import csv, sys, re
 
 
