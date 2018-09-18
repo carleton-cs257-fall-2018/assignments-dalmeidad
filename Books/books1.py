@@ -7,67 +7,72 @@ import csv, sys, re
 
 
 def books1():
-    fileName = sys.argv[1]
+    #taking and checking user arguments for future use
+    file_name = sys.argv[1]
     try:
-        dataToDisplay = sys.argv[2]
+        data_to_display = sys.argv[2]
     except IndexError:
-        catchUserError()
+        catch_user_error()
     try:
-        sortDirection = sys.argv[3]
+        sort_direction = sys.argv[3]
     except IndexError:
-        sortDirection = None
-    titleData = []
-    authorData = []
-    with open(fileName, newline='') as f:
-        fileReader = csv.reader(f)
+        sort_direction = None
+    #initialize lists of authors and titles
+    title_data = []
+    author_data = []
+    #creates a csv reader and parses through the csv file to fill the lists
+    with open(file_name, newline='') as f:
+        file_reader = csv.reader(f)
         print('test')
-        for row in fileReader:
-            parseBookData(row, titleData, authorData)
-        authorData = sortData(authorData)
-        titleData = sortData(titleData)
-    checkUserInput(dataToDisplay, sortDirection, titleData, authorData)
+        for row in file_reader:
+            parse_book_data(row, title_data, author_data)
+        author_data = sort_data(author_data)
+        title_data = sort_data(title_data)
+    #uses arguments and filled list to print correct data in correct sort direction
+    check_user_input(data_to_display, sort_direction, title_data, author_data)
 
-def checkUserInput(dataToDisplay, sortDirection, titleData, authorData):
-    if(sortDirection == 'reverse'):
-        titleData.reverse()
-        authorData.reverse()
-    if(dataToDisplay == 'books'):
-        print(titleData)
-    elif(dataToDisplay == 'authors'):
-        print(authorData)
+#re-sorts the list if user wants list in reverse order, prints data based on user input
+def check_user_input(data_to_display, sort_direction, title_data, author_data):
+    if(sort_direction == 'reverse'):
+        title_data.reverse()
+        author_data.reverse()
+    if(data_to_display == 'books'):
+        print(title_data)
+    elif(data_to_display == 'authors'):
+        print(author_data)
     else:
-        catchUserError()
+        catch_user_error()
 
-def catchUserError():
+def catch_user_error():
     print('Usage: \'books\' or \'authors\', sort direction is \'forward\' or \'reverse\' and is optional, file = sys.stderr')
     exit(0)
 
-def parseBookData(titleYearAuthor, titleData, authorData):
-    titleData.append(titleYearAuthor[0])
-    getCorrectAuthorSyntax(titleYearAuthor, authorData)
+def parse_book_data(title_year_author, title_data, author_data):
+    title_data.append(title_year_author[0])
+    get_correct_author_syntax(title_year_author, author_data)
 
 
-def getCorrectAuthorSyntax(titleYearAuthor, authorData):
-    justAuthorNames = re.sub(r'\([^()]*\)', '', titleYearAuthor[2])
-    for authors in justAuthorNames.split('and'):
+def get_correct_author_syntax(title_year_author, author_data):
+    just_author_names = re.sub(r'\([^()]*\)', '', title_year_author[2])
+    for authors in just_author_names.split('and'):
         authors = authors.strip()
-        authorFirstLastName = authors.split(' ')
-        lastName = authorFirstLastName[-1] + ', '
-        authorFirstLastName = authorFirstLastName[0:-1]
-        properNameDisplay = lastName + " ".join(str(x) for x in authorFirstLastName)
-        if properNameDisplay not in authorData:
-            authorData.append(properNameDisplay)
+        author_first_last_name = authors.split(' ')
+        last_name = author_first_last_name[-1] + ', '
+        author_first_last_name = author_first_last_name[0:-1]
+        proper_name_display = last_name + " ".join(str(x) for x in author_first_last_name)
+        if proper_name_display not in author_data:
+            author_data.append(proper_name_display)
 
-def sortData(authorOrTitle):
-    return mergesortData(authorOrTitle)
+def sort_data(author_or_title):
+    return mergesort_data(author_or_title)
 
-def mergesortData(x):
+def mergesort_data(x):
     if len(x) == 0 or len(x) == 1:
         return x
     else:
         center = len(x)//2
-        a = mergesortData(x[0:center])
-        b = mergesortData(x[center:])
+        a = mergesort_data(x[0:center])
+        b = mergesort_data(x[center:])
         return merge(a, b)
 
 def merge(a, b):
