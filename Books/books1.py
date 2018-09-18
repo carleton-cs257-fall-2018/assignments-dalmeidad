@@ -46,15 +46,17 @@ def check_user_input(data_to_display, sort_direction, title_data, author_data):
     else:
         catch_user_error()
 
+#exit case for user input error
 def catch_user_error():
     print('Usage: \'books\' or \'authors\', sort direction is \'forward\' or \'reverse\' and is optional, file = sys.stderr')
     exit(0)
 
+#puts book data into author and title lists
 def parse_book_data(title_year_author, title_data, author_data):
     title_data.append(title_year_author[0])
     get_correct_author_syntax(title_year_author, author_data)
 
-
+#switches name order and removes birth (and death) years from author names
 def get_correct_author_syntax(title_year_author, author_data):
     just_author_names = re.sub(r'\([^()]*\)', '', title_year_author[2])
     for authors in just_author_names.split('and'):
@@ -66,31 +68,34 @@ def get_correct_author_syntax(title_year_author, author_data):
         if proper_name_display not in author_data:
             author_data.append(proper_name_display)
 
+#runs a merge sort on our lists of data
 def sort_data(author_or_title):
     return mergesort_data(author_or_title)
 
+#we wrote a merge sort function
 def mergesort_data(list):
     if len(list) == 0 or len(list) == 1:
-        return list 
+        return list
     else:
         center = len(list)//2
-        firstHalf = mergesort_data(list[0:center])
-        secondHalf = mergesort_data(list[center:])
-        return merge(firstHalf, secondHalf)
+        first_half = mergesort_data(list[0:center])
+        second_half = mergesort_data(list[center:])
+        return merge(first_half, second_half)
 
-def merge(firstHalf, secondHalf):
-    mergedList = []
-    while len(firstHalf) != 0 and len(secondHalf) != 0:
-        if firstHalf[0] <= secondHalf[0]:
-            mergedList.append(firstHalf[0])
-            firstHalf.remove(firstHalf[0])
+#merge sort helper function
+def merge(first_half, second_half):
+    merged_list = []
+    while len(first_half) != 0 and len(second_half) != 0:
+        if first_half[0] <= second_half[0]:
+            merged_list.append(first_half[0])
+            first_half.remove(first_half[0])
         else:
-            mergedList.append(secondHalf[0])
-            secondHalf.remove(secondHalf[0])
-    if len(firstHalf) == 0:
-        mergedList += secondHalf 
-    elif len(secondHalf) == 0:
-        mergedlist += firstHalf 
-    return mergedList 
+            merged_list.append(second_half[0])
+            second_half.remove(second_half[0])
+    if len(first_half) == 0:
+        merged_list += second_half
+    elif len(second_half) == 0:
+        merged_list += first_half
+    return merged_list
 
 books1()
