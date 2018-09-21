@@ -63,7 +63,7 @@ class books_data_source_test(unittest.TestCase):
         'Charlotte Brontë', 'Emily Brontë'])
 
     def test_books_for_author(self):
-        self.assertEqual(self.booksDataSource.books_for_author(0), [0, 3, 27])
+        self.assertEqual(self.booksDataSource.books_for_author(0), [{'id': 0, 'title': 'All Clear', 'publication_year': 2010}, {'id': 3, 'title': 'Blackout', 'publication_year': 2010}, {'id': 27, 'title': 'To Say Nothing of the Dog', 'publication_year': 1997}])
 
     def test_authors_for_book(self):
         self.assertEqual(self.booksDataSource.authors_for_book(6), [5, 6])
