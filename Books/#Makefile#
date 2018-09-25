@@ -1,0 +1,11 @@
+# Sample Makefile for the booksdatasourcetest
+target:test
+
+.PHONY: test
+test:
+	@python booksdatasourcetest.py
+
+run:
+	python3 booksdatasourcetest.py
+
+
