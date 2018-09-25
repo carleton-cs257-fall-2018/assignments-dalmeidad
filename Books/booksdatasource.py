@@ -2,10 +2,12 @@
 '''
     booksdatasource.py
     Jeff Ondich, 18 September 2018
+    Implemented by Dawson D'almeida and Conor Gormally
 
     For use in some assignments at the beginning of Carleton's
     CS 257 Software Design class, Fall 2018.
 '''
+import csv, sys
 
 class BooksDataSource:
     '''
@@ -52,7 +54,7 @@ class BooksDataSource:
                 books: ID,title,publication-year
                   e.g. 6,Good Omens,1990
                        41,Middlemarch,1871
-                    
+
 
                 authors: ID,last-name,first-name,birth-year,death-year
                   e.g. 5,Gaiman,Neil,1960,NULL
@@ -63,7 +65,7 @@ class BooksDataSource:
                   e.g. 41,22
                        6,5
                        6,6
-                  
+
                   [that is, book 41 was written by author 22, while book 6
                     was written by both author 5 and author 6]
 
@@ -73,12 +75,62 @@ class BooksDataSource:
             NOTE TO STUDENTS: I have not specified how you will store the books/authors
             data in a BooksDataSource object. That will be up to you, in Phase 3.
         '''
-        pass
+        self.books_filename = books_filename
+        self.authors_filename = authors_filename
+        self.books_authors_link_filename = books_authors_link_filename
+        self.books_data = []
+        self.authors_data = []
+        self.books_authors_link = []
+
+
+        with open(self.books_filename, newline='') as f:
+            book_data_file_reader = csv.reader(f)
+            for row in book_data_file_reader:
+                self.books_data.append(self.create_dictionary(id_books=row[0],
+                                                              title=row[1],
+                                                              publication_year=row[2]))
+
+        with open(self.authors_filename, newline='') as f:
+            author_data_file_reader = csv.reader(f)
+            for row in author_data_file_reader:
+                self.authors_data.append(self.create_dictionary(id_authors=row[0], last_name=row[1],
+                                                                first_name=row[2], birth_year=row[3],
+                                                                death_year=row[4]))
+
+        with open(self.books_authors_link_filename, newline='') as f:
+            book_author_link_file_reader = csv.reader(f)
+            for row in book_author_link_file_reader:
+                self.books_authors_link.append(self.create_dictionary(id_books=row[0], id_authors=row[1]))
+
+    def create_dictionary(self, *, id_authors=None, last_name=None,
+                          first_name=None, birth_year=None,
+                          death_year=None, id_books=None,
+                          title=None, publication_year=None):
+        dictionary_to_return = {}
+        if id_authors:
+            dictionary_to_return['id_authors'] = id_authors
+        if last_name:
+            dictionary_to_return['last_name'] = last_name
+        if first_name:
+            dictionary_to_return['first_name'] = first_name
+        if birth_year:
+            dictionary_to_return['birth_year'] = birth_year
+        if death_year:
+            dictionary_to_return['death_year'] = death_year
+        if id_books:
+            dictionary_to_return['id_books'] = id_books
+        if title:
+            dictionary_to_return['title'] = title
+        if publication_year:
+            dictionary_to_return['publication_year'] = publication_year
+
+        return dictionary_to_return
 
     def book(self, book_id):
         ''' Returns the book with the specified ID. (See the BooksDataSource comment
             for a description of how a book is represented.) '''
-        return {}
+        return self.books_data[book_id]
+
 
     def books(self, *, author_id=None, search_text=None, start_year=None, end_year=None, sort_by='title'):
         ''' Returns a list of all the books in this data source matching all of
@@ -97,15 +149,21 @@ class BooksDataSource:
 
                 'year' -- sorts by publication_year, breaking ties with (case-insenstive) title
                 default -- sorts by (case-insensitive) title, breaking ties with publication_year
-                
+
             See the BooksDataSource comment for a description of how a book is represented.
         '''
-        return []
+        data_to_return = []
+        for book_dictionary in self.books_data:
+            if (((author_id and book_dictionary[author_id] == author_id) or not(author_id)) and
+               ((start_year and book_dictionary[start_year] == start_year) or not(start_year)) and
+               ((end_year and book_dictionary[end_year] == end_year) or not(end_year))):
+               data_to_return.append(book_dictionary)
+        return data_to_return
 
     def author(self, author_id):
         ''' Returns the author with the specified ID. (See the BooksDataSource comment for a
             description of how an author is represented.) '''
-        return {}
+        return self.authors_data[author_id]
 
     def authors(self, *, book_id=None, search_text=None, start_year=None, end_year=None, sort_by='birth_year'):
         ''' Returns a list of all the authors in this data source matching all of the
@@ -129,7 +187,7 @@ class BooksDataSource:
                     then (case-insensitive) first_name
                 any other value - sorts by (case-insensitive) last_name, breaking ties with
                     (case-insensitive) first_name, then birth_year
-        
+
             See the BooksDataSource comment for a description of how an author is represented.
         '''
         return []
@@ -143,7 +201,7 @@ class BooksDataSource:
     # A question for you: do you think it's worth creating and then maintaining these
     # particular convenience methods? Is books_for_author(17) better than books(author_id=17)?
 
-    def books_for_author(self, author_id):
+    def books_for_author(self, au1thor_id):
         ''' Returns a list of all the books written by the author with the specified author ID.
             See the BooksDataSource comment for a description of how an book is represented. '''
         return self.books(author_id=author_id)
@@ -153,3 +211,11 @@ class BooksDataSource:
             See the BooksDataSource comment for a description of how an author is represented. '''
         return self.books(book_id=book_id)
 
+
+def main():
+    book_data_source = BooksDataSource('books.csv', 'authors.csv', 'books_authors.csv')
+#    print(book_data_source.book(0))
+#    print(book_data_source.author(0))
+    print(book_data_source.books(author_id=0))
+
+main()
