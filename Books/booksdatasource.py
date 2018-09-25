@@ -82,47 +82,48 @@ class BooksDataSource:
         self.authors_data = []
         self.books_authors_link = []
 
-
         with open(self.books_filename, newline='') as f:
             book_data_file_reader = csv.reader(f)
             for row in book_data_file_reader:
-                self.books_data.append(self.create_dictionary(id_books=row[0],
+                self.books_data.append(self.create_dictionary(book_id=row[0],
                                                               title=row[1],
                                                               publication_year=row[2]))
 
         with open(self.authors_filename, newline='') as f:
             author_data_file_reader = csv.reader(f)
             for row in author_data_file_reader:
-                self.authors_data.append(self.create_dictionary(id_authors=row[0], last_name=row[1],
+                self.authors_data.append(self.create_dictionary(author_id=row[0], last_name=row[1],
                                                                 first_name=row[2], birth_year=row[3],
                                                                 death_year=row[4]))
 
         with open(self.books_authors_link_filename, newline='') as f:
             book_author_link_file_reader = csv.reader(f)
             for row in book_author_link_file_reader:
-                self.books_authors_link.append(self.create_dictionary(id_books=row[0], id_authors=row[1]))
+                self.books_authors_link.append(self.create_dictionary(book_id=row[0], author_id=row[1]))
 
-    def create_dictionary(self, *, id_authors=None, last_name=None,
+    def create_dictionary(self, *, author_id=None, last_name=None,
                           first_name=None, birth_year=None,
-                          death_year=None, id_books=None,
+                          death_year=None, book_id=None,
                           title=None, publication_year=None):
         dictionary_to_return = {}
-        if id_authors:
-            dictionary_to_return['id_authors'] = id_authors
+        if author_id:
+            dictionary_to_return['author_id'] = int(author_id)
         if last_name:
             dictionary_to_return['last_name'] = last_name
         if first_name:
             dictionary_to_return['first_name'] = first_name
         if birth_year:
-            dictionary_to_return['birth_year'] = birth_year
-        if death_year:
+            dictionary_to_return['birth_year'] = int(birth_year)
+        if death_year == 'NULL':
             dictionary_to_return['death_year'] = death_year
-        if id_books:
-            dictionary_to_return['id_books'] = id_books
+        elif death_year:
+            dictionary_to_return['death_year'] = int(death_year)
+        if book_id:
+            dictionary_to_return['book_id'] = int(book_id)
         if title:
             dictionary_to_return['title'] = title
         if publication_year:
-            dictionary_to_return['publication_year'] = publication_year
+            dictionary_to_return['publication_year'] = int(publication_year)
 
         return dictionary_to_return
 
@@ -131,6 +132,12 @@ class BooksDataSource:
             for a description of how a book is represented.) '''
         return self.books_data[book_id]
 
+    def getAuthorID(self, book_id):
+        authorIDs = []
+        for book in self.books_authors_link:
+            if book['book_id'] == book_id:
+                authorIDs.append(book['author_id'])
+        return authorIDs
 
     def books(self, *, author_id=None, search_text=None, start_year=None, end_year=None, sort_by='title'):
         ''' Returns a list of all the books in this data source matching all of
@@ -158,9 +165,12 @@ class BooksDataSource:
         #list of all the books
         #I can work on this more during the day tuesday
         for book_dictionary in self.books_data:
-            if (((author_id and book_dictionary[author_id] == author_id) or not(author_id)) and
-               ((start_year and book_dictionary[start_year] == start_year) or not(start_year)) and
-               ((end_year and book_dictionary[end_year] == end_year) or not(end_year))):
+            #generate list of authors connected to book_id
+            author_link = self.getAuthorID(book_dictionary['book_id'])
+            #checks if at least one of the authors in the list matches the author_id in the user's search
+            if ((author_id is None or any([author == author_id for author in author_link])) and
+               (start_year is None or book_dictionary['publication_year'] >= start_year) and
+               (end_year is None or book_dictionary['publication_year'] <= end_year)):
                data_to_return.append(book_dictionary)
         return data_to_return
 
@@ -220,6 +230,6 @@ def main():
     book_data_source = BooksDataSource('books.csv', 'authors.csv', 'books_authors.csv')
 #    print(book_data_source.book(0))
 #    print(book_data_source.author(0))
-    print(book_data_source.books(author_id=0))
+    print(book_data_source.books(author_id=0, end_year = 2000))
 
 main()
