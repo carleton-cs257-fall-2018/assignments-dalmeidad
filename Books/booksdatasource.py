@@ -106,39 +106,39 @@ class BooksDataSource:
                           death_year=None, book_id=None,
                           title=None, publication_year=None):
         dictionary_to_return = {}
-        if id_authors and id_books:
-            dictionary_to_return['id_authors'] = int(id_authors)
-            dictionary_to_return['id_books'] = int(id_books)
+        if author_id and book_id:
+            dictionary_to_return['author_id'] = int(author_id)
+            dictionary_to_return['book_id'] = int(book_id)
         elif author_id:
             dictionary_to_return['author_id'] = int(author_id)
             if last_name:
                 dictionary_to_return['last_name'] = last_name
             else:
-                dictionary_to_return['last_name'] = None
+                dictionary_to_return['last_name'] = 'NULL'
             if first_name:
                 dictionary_to_return['first_name'] = first_name
             else:
-                dictionary_to_return['First_name'] = None
+                dictionary_to_return['First_name'] = 'NULL'
             if birth_year:
                 dictionary_to_return['birth_year'] = int(birth_year)
             else:
-                dictionary_to_return['birth_year'] = None
+                dictionary_to_return['birth_year'] = 'NULL'
             if death_year == 'NULL':
                 dictionary_to_return['death_year'] = death_year
             elif death_year:
                 dictionary_to_return['death_year'] = int(death_year)
             else:
-                dictionary_to_return['death_year'] = None
+                dictionary_to_return['death_year'] = 'NULL'
         elif book_id:
             dictionary_to_return['book_id'] = int(book_id)
             if title:
                 dictionary_to_return['title'] = title
             else:
-                dictionary_to_return['title'] = None
+                dictionary_to_return['title'] = 'NULL'
             if publication_year:
                 dictionary_to_return['publication_year'] = int(publication_year)
             else:
-                dictionary_to_return['publication_year'] = None
+                dictionary_to_return['publication_year'] = 'NULL'
 
         return dictionary_to_return
 
@@ -152,14 +152,14 @@ class BooksDataSource:
         for book in self.books_authors_link:
             if book['book_id'] == book_id:
                 list_of_matching_authors.append(book['author_id'])
-        return author_id_list
+        return list_of_matching_authors
 
     def get_book_id(self, author_id):
-    list_of_matching_books = []
-    for author in self.books_authors_link:
-        if author['author_id'] == author_id:
-            list_of_matching_books.append(author['book_id'])
-    return book_id_list
+        list_of_matching_books = []
+        for author in self.books_authors_link:
+            if author['author_id'] == author_id:
+                list_of_matching_books.append(author['book_id'])
+        return list_of_matching_books
 
     def books(self, *, author_id=None, search_text=None, start_year=None, end_year=None, sort_by='title'):
         ''' Returns a list of all the books in this data source matching all of
@@ -187,13 +187,15 @@ class BooksDataSource:
             author_link = self.get_author_id(book_dictionary['book_id'])
             #checks if at least one of the authors in the list matches the author_id in the user's search
             if ((author_id is None or any([author == author_id for author in author_link])) and
-               (start_year is None or book_dictionary['publication_year'] >= start_year) and
-               (end_year is None or book_dictionary['publication_year'] <= end_year) and
+               (start_year is None or (book_dictionary['publication_year'] != 'NULL' and
+                                       book_dictionary['publication_year'] >= start_year)) and
+               (end_year is None or (book_dictionary['publication_year'] != 'NULL' and
+                                     book_dictionary['publication_year'] <= end_year)) and
                (search_text is None or (search_text) in book_dictionary['title'])):
                books_to_return.append(book_dictionary)
 
         if sort_by == "year":
-            data_to_return =  sorted(data_to_return, key=lambda book_dict: (book_dict['publication_year'] or ''))
+            books_to_return =  sorted(books_to_return, key=lambda book_dict: (book_dict['publication_year'] or ''))
 
         return books_to_return
 
@@ -230,15 +232,22 @@ class BooksDataSource:
         authors_to_return = []
         for author_dictionary in self.authors_data:
             #generate list of books connected to author_id
-            book_link = self.get_author_id(book_dictionary['book_id'])
+            book_link = self.get_book_id(author_dictionary['author_id'])
 
-            if ((author_id is None or any([author == author_id for author in author_link])) and
-               (start_year is None or book_dictionary['publication_year'] >= start_year) and
-               (end_year is None or book_dictionary['publication_year'] <= end_year) and
-               (search_text is None or (search_text) in book_dictionary['title'])):
-               books_to_return.append(book_dictionary)
-        return books_to_return
-        return []
+            if ((book_id is None or any([book == book_id for book in book_link])) and
+               (start_year is None or (author_dictionary['death_year'] == 'NULL'
+                                    or author_dictionary['death_year'] >= start_year)) and
+               (end_year is None or (author_dictionary['birth_year'] <= end_year)) and
+               (search_text is None or (search_text) in (author_dictionary['first_name']
+                                                        + author_dictionary['last_name']))):
+               authors_to_return.append(author_dictionary)
+        authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['birth_year'] or ''))
+        if sort_by != "birth_year":
+            authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['first_name'] or ''))
+            authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['last_name'] or ''))
+
+        return authors_to_return
+
 
 
     # Note for my students: The following two methods provide no new functionality beyond
@@ -249,7 +258,7 @@ class BooksDataSource:
     # A question for you: do you think it's worth creating and then maintaining these
     # particular convenience methods? Is books_for_author(17) better than books(author_id=17)?
 
-    def books_for_author(self, au1thor_id):
+    def books_for_author(self, author_id):
         ''' Returns a list of all the books written by the author with the specified author ID.
             See the BooksDataSource comment for a description of how an book is represented. '''
         return self.books(author_id=author_id)
@@ -257,13 +266,4 @@ class BooksDataSource:
     def authors_for_book(self, book_id):
         ''' Returns a list of all the authors of the book with the specified book ID.
             See the BooksDataSource comment for a description of how an author is represented. '''
-        return self.books(book_id=book_id)
-
-
-def main():
-    book_data_source = BooksDataSource('books.csv', 'authors.csv', 'books_authors.csv')
-#    print(book_data_source.book(0))
-#    print(book_data_source.author(0))
-    print(book_data_source.books(author_id=0)
-
-main()
+        return self.authors(book_id=book_id)
