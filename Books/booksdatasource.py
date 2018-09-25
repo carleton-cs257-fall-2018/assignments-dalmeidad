@@ -153,6 +153,10 @@ class BooksDataSource:
             See the BooksDataSource comment for a description of how a book is represented.
         '''
         data_to_return = []
+        #book_dictionary is a dictionary, so we can run through it as a for(dictionary) in list
+        #I can't find any issues with the logic but when I run the script it prints the full
+        #list of all the books
+        #I can work on this more during the day tuesday
         for book_dictionary in self.books_data:
             if (((author_id and book_dictionary[author_id] == author_id) or not(author_id)) and
                ((start_year and book_dictionary[start_year] == start_year) or not(start_year)) and
