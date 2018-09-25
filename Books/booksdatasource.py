@@ -132,12 +132,19 @@ class BooksDataSource:
             for a description of how a book is represented.) '''
         return self.books_data[book_id]
 
-    def getAuthorID(self, book_id):
-        authorIDs = []
+    def get_author_id(self, book_id):
+        list_of_matching_authors = []
         for book in self.books_authors_link:
             if book['book_id'] == book_id:
-                authorIDs.append(book['author_id'])
-        return authorIDs
+                list_of_matching_authors.append(book['author_id'])
+        return author_id_list
+
+    def get_book_id(self, author_id):
+    list_of_matching_books = []
+    for author in self.books_authors_link:
+        if author['author_id'] == author_id:
+            list_of_matching_books.append(author['book_id'])
+    return book_id_list
 
     def books(self, *, author_id=None, search_text=None, start_year=None, end_year=None, sort_by='title'):
         ''' Returns a list of all the books in this data source matching all of
@@ -159,20 +166,17 @@ class BooksDataSource:
 
             See the BooksDataSource comment for a description of how a book is represented.
         '''
-        data_to_return = []
-        #book_dictionary is a dictionary, so we can run through it as a for(dictionary) in list
-        #I can't find any issues with the logic but when I run the script it prints the full
-        #list of all the books
-        #I can work on this more during the day tuesday
+        books_to_return = []
         for book_dictionary in self.books_data:
             #generate list of authors connected to book_id
-            author_link = self.getAuthorID(book_dictionary['book_id'])
+            author_link = self.get_author_id(book_dictionary['book_id'])
             #checks if at least one of the authors in the list matches the author_id in the user's search
             if ((author_id is None or any([author == author_id for author in author_link])) and
                (start_year is None or book_dictionary['publication_year'] >= start_year) and
-               (end_year is None or book_dictionary['publication_year'] <= end_year)):
-               data_to_return.append(book_dictionary)
-        return data_to_return
+               (end_year is None or book_dictionary['publication_year'] <= end_year) and
+               (search_text is None or (search_text) in book_dictionary['title'])):
+               books_to_return.append(book_dictionary)
+        return books_to_return
 
     def author(self, author_id):
         ''' Returns the author with the specified ID. (See the BooksDataSource comment for a
@@ -204,6 +208,17 @@ class BooksDataSource:
 
             See the BooksDataSource comment for a description of how an author is represented.
         '''
+        authors_to_return = []
+        for author_dictionary in self.authors_data:
+            #generate list of books connected to author_id
+            book_link = self.get_author_id(book_dictionary['book_id'])
+
+            if ((author_id is None or any([author == author_id for author in author_link])) and
+               (start_year is None or book_dictionary['publication_year'] >= start_year) and
+               (end_year is None or book_dictionary['publication_year'] <= end_year) and
+               (search_text is None or (search_text) in book_dictionary['title'])):
+               books_to_return.append(book_dictionary)
+        return books_to_return
         return []
 
 
@@ -230,6 +245,6 @@ def main():
     book_data_source = BooksDataSource('books.csv', 'authors.csv', 'books_authors.csv')
 #    print(book_data_source.book(0))
 #    print(book_data_source.author(0))
-    print(book_data_source.books(author_id=0, end_year = 2000))
+    print(book_data_source.books(author_id=0)
 
 main()
