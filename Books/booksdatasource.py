@@ -106,24 +106,39 @@ class BooksDataSource:
                           death_year=None, book_id=None,
                           title=None, publication_year=None):
         dictionary_to_return = {}
-        if author_id:
+        if id_authors and id_books:
+            dictionary_to_return['id_authors'] = int(id_authors)
+            dictionary_to_return['id_books'] = int(id_books)
+        elif author_id:
             dictionary_to_return['author_id'] = int(author_id)
-        if last_name:
-            dictionary_to_return['last_name'] = last_name
-        if first_name:
-            dictionary_to_return['first_name'] = first_name
-        if birth_year:
-            dictionary_to_return['birth_year'] = int(birth_year)
-        if death_year == 'NULL':
-            dictionary_to_return['death_year'] = death_year
-        elif death_year:
-            dictionary_to_return['death_year'] = int(death_year)
-        if book_id:
+            if last_name:
+                dictionary_to_return['last_name'] = last_name
+            else:
+                dictionary_to_return['last_name'] = None
+            if first_name:
+                dictionary_to_return['first_name'] = first_name
+            else:
+                dictionary_to_return['First_name'] = None
+            if birth_year:
+                dictionary_to_return['birth_year'] = int(birth_year)
+            else:
+                dictionary_to_return['birth_year'] = None
+            if death_year == 'NULL':
+                dictionary_to_return['death_year'] = death_year
+            elif death_year:
+                dictionary_to_return['death_year'] = int(death_year)
+            else:
+                dictionary_to_return['death_year'] = None
+        elif book_id:
             dictionary_to_return['book_id'] = int(book_id)
-        if title:
-            dictionary_to_return['title'] = title
-        if publication_year:
-            dictionary_to_return['publication_year'] = int(publication_year)
+            if title:
+                dictionary_to_return['title'] = title
+            else:
+                dictionary_to_return['title'] = None
+            if publication_year:
+                dictionary_to_return['publication_year'] = int(publication_year)
+            else:
+                dictionary_to_return['publication_year'] = None
 
         return dictionary_to_return
 
@@ -176,6 +191,10 @@ class BooksDataSource:
                (end_year is None or book_dictionary['publication_year'] <= end_year) and
                (search_text is None or (search_text) in book_dictionary['title'])):
                books_to_return.append(book_dictionary)
+
+        if sort_by == "year":
+            data_to_return =  sorted(data_to_return, key=lambda book_dict: (book_dict['publication_year'] or ''))
+
         return books_to_return
 
     def author(self, author_id):
