@@ -24,18 +24,19 @@ class books_data_source_test(unittest.TestCase):
 
     def test_books_author_id(self):
         self.assertEqual(self.booksDataSource.books(author_id=7), [{'book_id': 7, 'title': 'Jane Eyre', 'publication_year': 1847},
-        {'id': 28, 'title': 'Villette', 'publication_year': 1853}])
+        {'book_id': 28, 'title': 'Villette', 'publication_year': 1853}])
 
     def test_books_search_text(self):
         self.assertEqual(self.booksDataSource.books(search_text='Dick'), [{'book_id': 13, 'title': 'Moby Dick', 'publication_year': 1851}])
 
     def test_books_start_year(self):
         self.assertEqual(self.booksDataSource.books(start_year=2010),
-        [{'book_id': 3, 'title': 'Blackout', 'publication_year': 2010},
+        [{'book_id': 0, 'title': 'All Clear', 'publication_year': 2010},
+        {'book_id': 3, 'title': 'Blackout', 'publication_year': 2010},
         {'book_id': 37, 'title': 'The Fifth Season', 'publication_year': 2015},
         {'book_id': 38, 'title': 'The Obelisk Gate', 'publication_year': 2015},
         {'book_id': 35, 'title': 'The Power', 'publication_year': 2016},
-        {'book_id': 39, 'title': 'The Stone Spy', 'publication_year': 2015}])
+        {'book_id': 39, 'title': 'The Stone Sky', 'publication_year': 2015}])
 
     def test_books_end_year(self):
         self.assertEqual(self.booksDataSource.books(end_year=1820),
