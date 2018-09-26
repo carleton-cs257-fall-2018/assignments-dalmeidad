@@ -193,7 +193,7 @@ class BooksDataSource:
                                      book_dictionary['publication_year'] <= end_year)) and
                (search_text is None or (search_text) in book_dictionary['title'])):
                books_to_return.append(book_dictionary)
-
+        books_to_return =  sorted(books_to_return, key=lambda book_dict: (book_dict['title'] or ''))
         if sort_by == "year":
             books_to_return =  sorted(books_to_return, key=lambda book_dict: (book_dict['publication_year'] or ''))
 
@@ -241,6 +241,8 @@ class BooksDataSource:
                (search_text is None or (search_text) in (author_dictionary['first_name']
                                                         + author_dictionary['last_name']))):
                authors_to_return.append(author_dictionary)
+        authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['last_name'] or ''))
+        authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['first_name'] or ''))
         authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['birth_year'] or ''))
         if sort_by != "birth_year":
             authors_to_return =  sorted(authors_to_return, key=lambda author_dict: (author_dict['first_name'] or ''))

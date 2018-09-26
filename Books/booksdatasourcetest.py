@@ -63,7 +63,8 @@ class books_data_source_test(unittest.TestCase):
 
     def test_authors_start_year(self):
         self.assertEqual(self.booksDataSource.authors(start_year=2018),
-        [{'author_id': 24, 'last_name': 'Carré', 'first_name': 'John Le', 'birth_year': 1931, 'death_year': 'NULL'}
+        [{'author_id': 3, 'last_name': 'Lewis', 'first_name': 'Sinclair', 'birth_year': 1885, 'death_year': 'NULL'},
+        {'author_id': 24, 'last_name': 'Carré', 'first_name': 'John Le', 'birth_year': 1931, 'death_year': 'NULL'},
         {'author_id': 2, 'last_name': 'Morrison', 'first_name': 'Toni', 'birth_year': 1931, 'death_year': 'NULL'},
         {'author_id': 0, 'last_name': 'Willis', 'first_name': 'Connie', 'birth_year': 1945, 'death_year': 'NULL'},
         {'author_id': 11, 'last_name': 'Rushdie', 'first_name': 'Salman', 'birth_year': 1947, 'death_year': 'NULL'},
@@ -76,7 +77,7 @@ class books_data_source_test(unittest.TestCase):
     def test_authors_end_year(self):
         self.assertEqual(self.booksDataSource.authors(end_year=1818),
         [{'author_id': 4, 'last_name': 'Austen', 'first_name': 'Jane', 'birth_year': 1775, 'death_year': 1817},
-        {'author_id': 23, 'last_name': 'Dickens', 'first_name': 'Charles', 'birth_year': 1812, 'death_year': 1870}
+        {'author_id': 23, 'last_name': 'Dickens', 'first_name': 'Charles', 'birth_year': 1812, 'death_year': 1870},
         {'author_id': 7, 'last_name': 'Brontë', 'first_name': 'Charlotte', 'birth_year': 1816, 'death_year': 1855},
         {'author_id': 15, 'last_name': 'Brontë', 'first_name': 'Emily', 'birth_year': 1818, 'death_year': 1848}])
 
@@ -86,7 +87,8 @@ class books_data_source_test(unittest.TestCase):
 
     def test_authors_end_year_sort_by_birth_year(self):
         self.assertEqual(self.booksDataSource.authors(end_year=1818, sort_by='birth_year'),
-        [{'author_id': 23, 'last_name': 'Dickens', 'first_name': 'Charles', 'birth_year': 1812, 'death_year': 1870},
+        [{'author_id': 4, 'last_name': 'Austen', 'first_name': 'Jane', 'birth_year': 1775, 'death_year': 1817},
+        {'author_id': 23, 'last_name': 'Dickens', 'first_name': 'Charles', 'birth_year': 1812, 'death_year': 1870},
         {'author_id': 7, 'last_name': 'Brontë', 'first_name': 'Charlotte', 'birth_year': 1816, 'death_year': 1855},
         {'author_id': 15, 'last_name': 'Brontë', 'first_name': 'Emily', 'birth_year': 1818, 'death_year': 1848}])
 
