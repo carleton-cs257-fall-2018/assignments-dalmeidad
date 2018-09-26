@@ -148,6 +148,8 @@ class BooksDataSource:
         return self.books_data[book_id]
 
     def get_author_id(self, book_id):
+        ''' Returns the author_id(s) of the author(s) who wrote the book represented
+            by the book_id'''
         list_of_matching_authors = []
         for book in self.books_authors_link:
             if book['book_id'] == book_id:
@@ -155,6 +157,8 @@ class BooksDataSource:
         return list_of_matching_authors
 
     def get_book_id(self, author_id):
+        ''' Returns the book_id(s) of the book(s) that the author represented by
+            the author_id had written'''
         list_of_matching_books = []
         for author in self.books_authors_link:
             if author['author_id'] == author_id:

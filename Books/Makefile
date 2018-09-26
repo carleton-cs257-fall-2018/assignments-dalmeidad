@@ -1,5 +1,7 @@
 # Sample Makefile for the booksdatasourcetest
-run:
-	echo "=== Testing booksdatasourcetest.py ==="
-	python3 booksdatasourcetest.py
+test:
+	@echo ""
+	@echo "=== Testing booksdatasourcetest.py ==="
+	@echo ""
 
+	@python3 booksdatasourcetest.py
