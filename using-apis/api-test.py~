@@ -1,0 +1,44 @@
+'''
+    api-test.py
+    Dawson d'ALmeida, 1 October 2018
+
+    Basic program for performing two operations, getting
+    a list of things and getting details about a single thing,
+    on the ____ API.
+
+'''
+
+import sys
+import argparse
+import json
+import urllib.request
+import requests
+
+def get_list_of_things():
+    base_url = 'https://api.iextrading.com/1.0/{0}'
+    url = base_url.format('tops')
+    data_from_server = urllib.request.urlopen(url).read()
+    string_from_server = data_from_server.decode('utf-8')
+    stock_list = json.loads(string_from_server)
+    print(stock_list)
+    #https://api.iextrading.com/1.0/tops
+    return None
+
+def get_details_of_single_thing():
+    base_url = 'https://api.iextrading.com/1.0/stock/{0}/{1}'
+    url = base_url.format('goog', 'book')
+    data_from_server = urllib.request.urlopen(url).read()
+    string_from_server = data_from_server.decode('utf-8')
+    stock_info = json.loads(string_from_server)
+    print(stock_info)
+    
+    return None
+
+def main():
+    print('Testing: get_list_of_things') 
+    get_list_of_things()
+    print('Testing: get_details_of_singlie_things')
+    get_details_of_single_thing()
+
+if __name__ == '__main__':
+    main()
